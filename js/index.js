@@ -40,17 +40,6 @@ image.onload = () => {
 image.src = "img/gameMap.png";
 
 const enemies = [];
-for (let i = 1; i < 10; i++) {
-  const xOffset = i * 150;
-  enemies.push(
-    new Enemy({
-      position: {
-        x: waypoints[0].x - xOffset,
-        y: waypoints[0].y,
-      },
-    })
-  );
-}
 
 const mouse = {
   x: undefined,
@@ -59,6 +48,23 @@ const mouse = {
 
 const buildings = [];
 let activeTile = undefined;
+let enemyCount = 3;
+
+function spawnEnemies(spawnCount) {
+  for (let i = 1; i < spawnCount + 1; i++) {
+    const xOffset = i * 150;
+    enemies.push(
+      new Enemy({
+        position: {
+          x: waypoints[0].x - xOffset,
+          y: waypoints[0].y,
+        },
+      })
+    );
+  }
+}
+
+spawnEnemies(enemyCount);
 
 function animate() {
   requestAnimationFrame(animate);
@@ -101,6 +107,13 @@ function animate() {
 
           if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
         }
+
+        // 적 수량 체크
+        if (enemies.length === 0) {
+          enemyCount += 2;
+          spawnEnemies(enemyCount);
+        }
+
         building.projectiles.splice(i, 1);
       }
     }
