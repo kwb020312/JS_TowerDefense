@@ -41,15 +41,6 @@ image.src = "img/gameMap.png";
 
 const enemies = [];
 
-const mouse = {
-  x: undefined,
-  y: undefined,
-};
-
-const buildings = [];
-let activeTile = undefined;
-let enemyCount = 3;
-
 function spawnEnemies(spawnCount) {
   for (let i = 1; i < spawnCount + 1; i++) {
     const xOffset = i * 150;
@@ -64,17 +55,39 @@ function spawnEnemies(spawnCount) {
   }
 }
 
+const buildings = [];
+let activeTile = undefined;
+let enemyCount = 3;
+let hearts = 10;
 spawnEnemies(enemyCount);
 
 function animate() {
-  requestAnimationFrame(animate);
+  const animationId = requestAnimationFrame(animate);
 
   c.drawImage(image, 0, 0);
 
   for (let i = enemies.length - 1; i >= 0; i--) {
     const enemy = enemies[i];
     enemy.update();
+
+    if (enemy.position.x > canvas.width) {
+      hearts -= 1;
+      enemies.splice(i, 1);
+
+      if (hearts === 0) {
+        cancelAnimationFrame(animationId);
+        document.querySelector("#gameOver").style.display = "flex";
+        return;
+      }
+    }
   }
+
+  // 적 수량 체크
+  if (enemies.length === 0) {
+    enemyCount += 2;
+    spawnEnemies(enemyCount);
+  }
+
   placementTiles.forEach((tile) => tile.update(mouse));
 
   buildings.forEach((building) => {
@@ -108,19 +121,11 @@ function animate() {
           if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
         }
 
-        // 적 수량 체크
-        if (enemies.length === 0) {
-          enemyCount += 2;
-          spawnEnemies(enemyCount);
-        }
-
         building.projectiles.splice(i, 1);
       }
     }
   });
 }
-
-animate();
 
 canvas.addEventListener("click", () => {
   if (activeTile && !activeTile.isOccupied) {
@@ -135,6 +140,11 @@ canvas.addEventListener("click", () => {
     activeTile.isOccupied = true;
   }
 });
+
+const mouse = {
+  x: undefined,
+  y: undefined,
+};
 
 window.addEventListener("mousemove", (event) => {
   mouse.x = event.clientX;
