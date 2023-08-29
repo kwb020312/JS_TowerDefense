@@ -64,10 +64,11 @@ function animate() {
   requestAnimationFrame(animate);
 
   c.drawImage(image, 0, 0);
-  enemies.forEach((enemy) => {
-    enemy.update();
-  });
 
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    const enemy = enemies[i];
+    enemy.update();
+  }
   placementTiles.forEach((tile) => tile.update(mouse));
 
   buildings.forEach((building) => {
@@ -89,7 +90,17 @@ function animate() {
       const xDifference = projectile.enemy.center.x - projectile.position.x;
       const yDifference = projectile.enemy.center.y - projectile.position.y;
       const distance = Math.hypot(xDifference, yDifference);
+
+      // 공격이 적에게 적중했을 때
       if (distance < projectile.enemy.radius + projectile.radius) {
+        projectile.enemy.health -= 20;
+        if (projectile.enemy.health <= 0) {
+          const enemyIndex = enemies.findIndex(
+            (enemy) => projectile.enemy === enemy
+          );
+
+          if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
+        }
         building.projectiles.splice(i, 1);
       }
     }
