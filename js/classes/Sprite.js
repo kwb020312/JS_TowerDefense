@@ -44,7 +44,7 @@ class Sprite {
     // 애니메이션 관련
     this.frames.elapsed++;
     if (this.frames.elapsed % this.frames.hold === 0) this.frames.current++;
-    if (this.frames.current >= this.frames.max - 1) {
+    if (this.frames.current >= this.frames.max) {
       this.frames.current = 0;
     }
   }
